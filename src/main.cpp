@@ -5,7 +5,7 @@ constexpr size_t BUFFER_SIZE = 500;
 
 void lexer_commands(std::string Buffer)
 {
-		
+    std::cout << Buffer << std::endl;
 }
 
 int main(void)
@@ -16,7 +16,7 @@ int main(void)
 	for(;;)
 	{
 		std::cout << "$ ";
-		std::cin >> Buffer;
+		std::getline(std::cin, Buffer);
         lexer_commands(Buffer);
 	}	
     return 0;
