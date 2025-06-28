@@ -1,12 +1,7 @@
 #include <iostream>
 #include <string>
 
-constexpr size_t BUFFER_SIZE = 500;
-
-void lexer_commands(std::string Buffer)
-{
-    std::cout << Buffer << std::endl;
-}
+constexpr size_t BUFFER_SIZE = 500; 
 
 int main(void)
 {				
@@ -17,7 +12,6 @@ int main(void)
 	{
 		std::cout << "$ ";
 		std::getline(std::cin, Buffer);
-        lexer_commands(Buffer);
-	}	
+    }	
     return 0;
 }
