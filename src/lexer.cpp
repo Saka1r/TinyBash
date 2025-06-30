@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <cctype>
 
 enum class TokenType{
     Command,
@@ -7,6 +9,7 @@ enum class TokenType{
     Number,
     Invalid,
     End
+        
 };
 
 struct Token {
