@@ -4,7 +4,8 @@
 #include <cctype>
 
 enum class TokenType{
-    Command,
+    Commands,
+    Echo,
     Identifier,
     Number,
     Invalid,
@@ -61,6 +62,11 @@ class Lexer {
             if(IsAtEnd()){
                 return {TokenType::End, ""};}
 
+            if (input.substr(currentIndex).find("echo") == 0) {
+                currentIndex += 4;  // echo -> 4 words
+                return {TokenType::Echo, "echo"};
+            }
+
             if (isalpha(input[currentIndex]) || input[currentIndex] == '_') {
                 ReadIdetifier();
                 return {TokenType::Identifier, identifierValue};
@@ -76,7 +82,7 @@ class Lexer {
 
 int main(void)
 {
-    std::string inputString = "123 abc _var 456";
+    std::string inputString = "123 abc _var 456 echo";
     Lexer lexer(inputString);
 
     while (true) {
@@ -86,7 +92,7 @@ int main(void)
         }
         // Вывод токенов
         switch (token.type) {
-            case TokenType::Command:
+            case TokenType::Commands:
                 std::cout << "Token: Command Value: " << token.value << std::endl;
                 break;
             case TokenType::Identifier:
@@ -101,6 +107,8 @@ int main(void)
             case TokenType::End:
                 std::cout << "Token: End Value: " << token.value << std::endl;
                 break;
+            case TokenType::Echo:
+                std::cout << "Token: Echo: " << token.value << std::endl;
         }
     }
 
