@@ -1,11 +1,8 @@
-#include <iostream>
-#include <string>
-#include <vector>
 #include <cctype>
+#include "ReadFile.hpp"
 
 enum class TokenType{
-    Commands,
-    Echo,
+    Command,
     Identifier,
     Number,
     Invalid,
@@ -33,6 +30,10 @@ class Lexer {
             while(currentIndex < input.size() && isspace(input[currentIndex])){
                 currentIndex++;}
         } 
+
+        bool IsWordBoundary(char c) {
+            return isspace(c) || c == '\0';
+        }
 
         bool IsAtEnd() const 
         {
@@ -62,11 +63,21 @@ class Lexer {
             if(IsAtEnd()){
                 return {TokenType::End, ""};}
 
-            if (input.substr(currentIndex).find("echo") == 0) {
-                currentIndex += 4;  // echo -> 4 words
-                return {TokenType::Echo, "echo"};
+            if (input.compare(currentIndex, 4, "echo") == 0) {
+                size_t nextPos = currentIndex + 4;
+                if (nextPos >= input.size() || IsWordBoundary(input[nextPos])) {
+                    currentIndex += 4;
+                    return {TokenType::Command, "echo"};
+                }
             }
 
+            if (input.compare(currentIndex, 2, "ls") == 0) {
+                size_t nextPos = currentIndex + 2;
+                if (nextPos >= input.size() || IsWordBoundary(input[nextPos])) {
+                    currentIndex += 2;
+                    return {TokenType::Command, "ls"};
+                }
+            }
             if (isalpha(input[currentIndex]) || input[currentIndex] == '_') {
                 ReadIdetifier();
                 return {TokenType::Identifier, identifierValue};
@@ -75,15 +86,25 @@ class Lexer {
             if(isdigit(input[currentIndex])){
                 ReadNumber();
                 return {TokenType::Number, numberValue};}
-
+            
+            char invalidChar = input[currentIndex];
+            currentIndex++;
             return {TokenType::Invalid, std::string(1, input[currentIndex])};
         }
 };
 
 int main(void)
 {
-    std::string inputString = "123 abc _var 456 echo";
-    Lexer lexer(inputString);
+    std::string content;
+
+    try {
+        std::string name_file;
+        std::cin >> name_file;
+        content = Read_file(name_file);
+    } catch (const std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+    }
+    Lexer lexer(content);
 
     while (true) {
         Token token = lexer.GetNextToken();
@@ -92,7 +113,7 @@ int main(void)
         }
         // Вывод токенов
         switch (token.type) {
-            case TokenType::Commands:
+            case TokenType::Command:
                 std::cout << "Token: Command Value: " << token.value << std::endl;
                 break;
             case TokenType::Identifier:
@@ -107,10 +128,7 @@ int main(void)
             case TokenType::End:
                 std::cout << "Token: End Value: " << token.value << std::endl;
                 break;
-            case TokenType::Echo:
-                std::cout << "Token: Echo: " << token.value << std::endl;
+            }
         }
-    }
-
     return 0;
 }
